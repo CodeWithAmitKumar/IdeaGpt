@@ -5,10 +5,9 @@ import { GiJusticeStar } from 'react-icons/gi';
 
 const API_KEY = 'AIzaSyBT2LQbtw18Yhjii-gGgLznTbceH2s-Xps'; // replace with a valid API key
 
-
 const App = () => {
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]); // Initialize as an empty array
+  const [messages, setMessages] = useState([]); // Store chat history
   const [isResponseScreen, setIsResponseScreen] = useState(false);
 
   const hitRequest = async () => {
@@ -43,6 +42,11 @@ const App = () => {
     return text.startsWith('```') && text.endsWith('```');
   };
 
+  const handleNewChat = () => {
+    setMessages([]); // Clear chat history
+    setIsResponseScreen(false); // Return to the initial screen
+  };
+
   return (
     <div className="container w-screen min-h-screen overflow-hidden bg-[#0E0E0E] text-white flex flex-col">
       <div className="logo">
@@ -61,7 +65,7 @@ const App = () => {
             <button
               id="NewChatBtn"
               className="bg-[#181818] p-[10px] rounded-[30px] cursor-pointer text-[14px] px-[20px]"
-              onClick={() => setIsResponseScreen(false)}
+              onClick={handleNewChat} // Clear chat history
             >
               New Chat
             </button>
@@ -72,8 +76,8 @@ const App = () => {
                 key={index}
                 className={`mb-4 rounded-md ${
                   messageItem.type === 'user'
-                    ? ' bg-[#1F1F1F] mr-[13px] text-right self-end ml-auto p-2 text-sm max-w-[40%] rounded-2xl mb-6 pl-2' // User message styling
-                    : 'bg-[#292929] text-left self-start mr-auto p-4 max-w-[65%] rounded-2xl  mb-4' // Adjusted width for AI response
+                    ? 'bg-[#1F1F1F] mr-[13px] text-right self-end ml-auto p-2 text-sm max-w-[40%] rounded-2xl mb-6 pl-2' // User message styling
+                    : 'bg-[#292929] text-left self-start mr-auto p-4 max-w-[65%] rounded-2xl mb-4' // Adjusted width for AI response
                 }`}
               >
                 {messageItem.type === 'responseMessage' && (
