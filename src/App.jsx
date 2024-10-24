@@ -1,99 +1,115 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import React, { useState } from 'react';
-import { BiSend } from "react-icons/bi";
-import { GiJusticeStar } from "react-icons/gi";
-import { IoCodeSlashSharp } from "react-icons/io5";
-import { TbBrandPython, TbMessageChatbot, TbPlanet } from "react-icons/tb";
+import { BiSend } from 'react-icons/bi';
+import { GiJusticeStar } from 'react-icons/gi';
 
-import "./App.css";
+const API_KEY = 'AIzaSyBT2LQbtw18Yhjii-gGgLznTbceH2s-Xps'; // replace with a valid API key
 
 const App = () => {
-  const [message, setMessage] = useState("");
-  const [isResponseScreen, setIsResponseScreen] = useState(true);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]); // Initialize as an empty array
+  const [isResponseScreen, setIsResponseScreen] = useState(false);
+
+  const hitRequest = async () => {
+    if (message) {
+      try {
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const result = await model.generateContent(message);
+
+        const responseText = await result.response.text(); // Await the result to avoid promise
+
+        const newMessages = [
+          ...messages,
+          { type: 'user', text: message }, // User message
+          { type: 'responseMessage', text: responseText }, // AI response
+        ];
+
+        setMessages(newMessages);
+        setIsResponseScreen(true);
+        setMessage(''); // Reset input field after sending
+      } catch (error) {
+        console.error('Error generating response:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    } else {
+      alert('Please enter a message before sending.');
+    }
+  };
 
   return (
-    <>  
-      <div className="container w-screen min-h-screen overflow-x-hidden bg-[#0E0E0E] text-white">
-        <div className="logo">
-          <h3 className="font-bold text-[#d4cdcf] pl-[25px] pt-[15px] cursor-pointer text-2xl ">
-            <big>IdeaGpt</big>
-          </h3>
-        </div>
-
-      {/* 2nd screen start */}
-
-        {
-          isResponseScreen ?
-            <div className='h-[74vh] '>
-
-              <div className="header pt-[15px] flex items-center justify-between w-[100vw] px-[200px] ">
-                
-          
-
-          <h2 className='text-2xl flex items-center'><GiJusticeStar className="mr-2 text-blue-500 pr-[5px]" /> Hello there! How can I help you today? Feel free to ask me anything. 😊</h2>
-
-          <button id='NewChatBtn' className='bg-[#181818] p-[10px] rounded-[30px] curser-pointer text-[14px] px-[20px] '>New Chat</button>
-              </div>
-
-            </div> 
-          : 
-            <div className="middle h-[70vh] flex items-center flex-col justify-center">
-              <h1 className="text-4xl"><b>Hello</b>, How Can I Help You Today?</h1>
-              <div className="boxes mt-[30px] flex items-center gap-2">
-                {/* card 1 */}
-                <div className="card rounded-lg cursor-pointer transition-all hover:bg-[#5e5f61] px-[20px] relative min-h-[20vh] bg-[#181818] p-[10px]">
-                  <p className='text-[18px]'>What Is Coding?<br />
-                    How We Can Learn It.
-                    <i className='absolute right-3 bottom-3 text-[18px]'><IoCodeSlashSharp /></i>
-                  </p>
-                </div>
-
-                {/* card 2 */}
-                <div className="card rounded-lg cursor-pointer transition-all hover:bg-[#5e5f61] px-[20px] relative min-h-[20vh] bg-[#181818] p-[10px]">
-                  <p className='text-[18px]'>Which Is the <br />
-                    Red planet of the solar system?
-                    <i className='absolute right-3 bottom-3 text-[18px]'><TbPlanet /></i>
-                  </p>
-                </div>
-
-                {/* card 3 */}
-                <div className="card rounded-lg cursor-pointer transition-all hover:bg-[#5e5f61] px-[20px] relative min-h-[20vh] bg-[#181818] p-[10px]">
-                  <p className='text-[18px]'>In Which Year <br />
-                    Python was Invented?
-                    <i className='absolute right-3 bottom-3 text-[18px]'><TbBrandPython /></i>
-                  </p>
-                </div>
-
-                {/* card 4 */}
-                <div className="card rounded-lg cursor-pointer transition-all hover:bg-[#5e5f61] px-[20px] relative min-h-[20vh] bg-[#181818] p-[10px]">
-                  <p className='text-[18px]'>How We Can Use <br />
-                    AI for Adoption?
-                    <i className='absolute right-3 bottom-3 text-[18px]'><TbMessageChatbot /></i>
-                  </p>
-                </div>
-              </div>
-            </div>
-        }
-
-        <div className="bottom w-[100%] flex flex-col items-center">
-          <div className="InputBox w-[65%] text-[15px] py-[7.4px] flex items-center bg-[#181818] rounded-[30px]">
-            <input 
-              onChange={(e) => setMessage(e.target.value)} 
-              type="text" 
-              className='p-[10px] pl-[15px] bg-transparent flex-1 outline-none border-none' 
-              placeholder="Write Your Message Here ..." 
-              id='messageBox'
-            />
-
-            {message === "" ? "" : <i className='text-green-500 text-[20px] mr-5 cursor-pointer'><BiSend /></i>}
-          </div>
-
-          <p className='text-[gray] text-[14px] my-11'>
-            <b>IdeaGpt</b> is Developed By <b>Amit Kumar Patra</b>. This AI uses the Gemini API for responding.
-          </p>
-        </div>
+    <div className="container w-screen min-h-screen overflow-x-hidden bg-[#0E0E0E] text-white">
+      <div className="logo">
+        <h3 className="font-bold text-[#d4cdcf] pl-[25px] pt-[15px] cursor-pointer text-2xl">
+          <big>IdeaGpt</big>
+        </h3>
       </div>
-    </>
-  )
-}
+
+      {isResponseScreen ? (
+        <div className="h-[74vh]">
+          <div className="header pt-[15px] flex items-center justify-between w-[100vw] px-[200px]">
+            <h2 className="text-2xl flex items-center">
+              <GiJusticeStar className="mr-2 text-blue-500 pr-[5px]" />
+              Hello there! How can I help you today?
+            </h2>
+            <button
+              id="NewChatBtn"
+              className="bg-[#181818] p-[10px] rounded-[30px] curser-pointer text-[14px] px-[20px]"
+              onClick={() => setIsResponseScreen(false)}
+            >
+              New Chat
+            </button>
+          </div>
+          <div className="messages w-[65%] mx-auto mt-8 flex flex-col items-center">
+            {messages.map((messageItem, index) => (
+              <div
+                key={index}
+                className={`p-4 mb-4 rounded-md max-w-[75%] ${
+                  messageItem.type === 'user' ? 'bg-[#1F1F1F] text-right self-end' : 'bg-[#292929] text-left self-start'
+                }`}
+              >
+                {messageItem.type === 'responseMessage' && (
+                  <GiJusticeStar className="mr-2 text-blue-500 pr-[5px]" />
+                )}
+                {messageItem.text}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="middle h-[70vh] flex items-center flex-col justify-center">
+          <h1 className="text-4xl">
+            <b>Hello</b>, How Can I Help You Today?
+          </h1>
+          <div className="boxes mt-[30px] flex items-center gap-2">
+            {/* Cards */}
+          </div>
+        </div>
+      )}
+
+      <div className="bottom w-[100%] flex flex-col items-center">
+        <div className="InputBox w-[65%] text-[15px] py-[7.4px] flex items-center bg-[#181818] rounded-[30px]">
+          <input
+            onChange={(e) => setMessage(e.target.value)}
+            type="text"
+            className="p-[10px] pl-[15px] bg-transparent flex-1 outline-none border-none"
+            placeholder="Write Your Message Here ..."
+            id="messageBox"
+            value={message} // Bind input value to state
+          />
+          {message !== "" && (
+            <i className="text-green-500 text-[20px] mr-5 cursor-pointer" onClick={hitRequest}>
+              <BiSend />
+            </i>
+          )}
+        </div>
+
+        <p className="text-[gray] text-[14px] my-11">
+          <b>IdeaGpt</b> is Developed By <b>Amit Kumar Patra</b>. This AI uses the Gemini API for responding.
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export default App;
