@@ -1,7 +1,12 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import React, { useState } from 'react';
-import { BiSend } from 'react-icons/bi';
+import React, { useEffect, useState } from 'react';
+import { BiMicrophone, BiSend } from 'react-icons/bi'; // Add microphone icon
 import { GiJusticeStar } from 'react-icons/gi';
+
+// Web Speech API for voice recognition
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
 const API_KEY = 'AIzaSyBT2LQbtw18Yhjii-gGgLznTbceH2s-Xps'; // replace with a valid API key
 
@@ -9,6 +14,31 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]); // Store chat history
   const [isResponseScreen, setIsResponseScreen] = useState(false);
+  const [isListening, setIsListening] = useState(false); // To track voice search status
+
+  // Handle speech recognition events
+  useEffect(() => {
+    if (recognition) {
+      recognition.continuous = false; // Recognize one command at a time
+      recognition.interimResults = false; // Don't show interim results
+      recognition.lang = 'en-US'; // Language for recognition
+
+      recognition.onresult = (event) => {
+        const speechToText = event.results[0][0].transcript;
+        setMessage(speechToText); // Set recognized speech as message
+        setIsListening(false); // Stop listening
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Error occurred in speech recognition:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
 
   const hitRequest = async () => {
     if (message) {
@@ -52,6 +82,17 @@ const App = () => {
     if (event.key === 'Enter') {
       event.preventDefault(); // Prevent the default action (like a form submission)
       hitRequest(); // Call the function to send the message
+    }
+  };
+
+  // Toggle voice search
+  const toggleListening = () => {
+    if (isListening) {
+      recognition.stop(); // Stop listening if it's already active
+      setIsListening(false);
+    } else {
+      recognition.start(); // Start listening
+      setIsListening(true);
     }
   };
 
@@ -133,11 +174,15 @@ const App = () => {
             id="messageBox"
             value={message} // Bind input value to state
           />
-          {message !== "" && (
+          {message !== '' && (
             <i className="text-green-500 text-[20px] mr-5 cursor-pointer" onClick={hitRequest}>
               <BiSend />
             </i>
           )}
+          {/* Add microphone icon for voice input */}
+          <i className={`text-green-500 text-[20px] cursor-pointer ${isListening ? 'text-red-500' : ''}`} onClick={toggleListening} style={{ marginRight: '15px' }}>
+            <BiMicrophone />
+          </i>
         </div>
 
         <p className="text-[gray] text-[14px] my-11">
