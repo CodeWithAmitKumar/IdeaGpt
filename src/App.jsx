@@ -90,8 +90,8 @@ const App = () => {
               >
                 {messageItem.type === 'responseMessage' && (
                   <>
-                    <GiJusticeStar className="text-blue-500" /> {/* AI response SVG */}
-                    <span>
+                    <GiJusticeStar className="text-base text-blue-500" /> {/* AI response SVG sized to font */}
+                    <span className="text-base">
                       {isCodeResponse(messageItem.text) ? (
                         <pre className="text-green-300">
                           {messageItem.text.replace(/```/g, '')} {/* Remove the ``` markers */}
