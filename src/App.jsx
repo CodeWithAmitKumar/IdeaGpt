@@ -47,6 +47,14 @@ const App = () => {
     setIsResponseScreen(false); // Return to the initial screen
   };
 
+  // New function to handle key down events
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent the default action (like a form submission)
+      hitRequest(); // Call the function to send the message
+    }
+  };
+
   return (
     <div className="container w-screen min-h-screen overflow-hidden bg-[#0E0E0E] text-white flex flex-col">
       <div className="logo">
@@ -109,6 +117,7 @@ const App = () => {
         <div className="InputBox w-[65%] text-[15px] py-[7.4px] flex items-center bg-[#181818] rounded-[30px]">
           <input
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown} // Add key down event handler
             type="text"
             className="p-[10px] pl-[15px] bg-transparent flex-1 outline-none border-none"
             placeholder="Write Your Message Here ..."
@@ -123,7 +132,7 @@ const App = () => {
         </div>
 
         <p className="text-[gray] text-[14px] my-11">
-          <b>IdeaGpt</b> is Developed By <b>Amit Kumar Patra</b>. This AI uses the Gemini API for responding.
+          <b>IdeaGpt</b> is Developed By <b>Amit Kumar Patra</b>. IdeaGpt can make mistakes. Check important info.
         </p>
       </div>
     </div>
