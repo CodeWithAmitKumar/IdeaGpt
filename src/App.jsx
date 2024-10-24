@@ -37,8 +37,13 @@ const App = () => {
     }
   };
 
+  // Helper function to determine if the message is code
+  const isCodeResponse = (text) => {
+    return text.startsWith('```') && text.endsWith('```');
+  };
+
   return (
-    <div className="container w-screen min-h-screen overflow-x-hidden bg-[#0E0E0E] text-white">
+    <div className="container w-screen min-h-screen overflow-hidden bg-[#0E0E0E] text-white flex flex-col">
       <div className="logo">
         <h3 className="font-bold text-[#d4cdcf] pl-[25px] pt-[15px] cursor-pointer text-2xl">
           <big>IdeaGpt</big>
@@ -46,32 +51,40 @@ const App = () => {
       </div>
 
       {isResponseScreen ? (
-        <div className="h-[74vh]">
-          <div className="header pt-[15px] flex items-center justify-between w-[100vw] px-[200px]">
+        <div className="h-[calc(100vh-150px)] flex flex-col">
+          <div className="header pt-[15px] flex items-center justify-between w-full px-[200px]">
             <h2 className="text-2xl flex items-center">
               <GiJusticeStar className="mr-2 text-blue-500 pr-[5px]" />
               Hello there! How can I help you today?
             </h2>
             <button
               id="NewChatBtn"
-              className="bg-[#181818] p-[10px] rounded-[30px] curser-pointer text-[14px] px-[20px]"
+              className="bg-[#181818] p-[10px] rounded-[30px] cursor-pointer text-[14px] px-[20px]"
               onClick={() => setIsResponseScreen(false)}
             >
               New Chat
             </button>
           </div>
-          <div className="messages w-[65%] mx-auto mt-8 flex flex-col items-center">
+          <div className="messages w-[65%] mx-auto mt-8 overflow-y-auto flex-grow">
             {messages.map((messageItem, index) => (
               <div
                 key={index}
-                className={`p-4 mb-4 rounded-md max-w-[75%] ${
-                  messageItem.type === 'user' ? 'bg-[#1F1F1F] text-right self-end' : 'bg-[#292929] text-left self-start'
+                className={`mb-4 rounded-md ${
+                  messageItem.type === 'user'
+                    ? ' bg-[#1F1F1F] mr-[13px] text-right self-end ml-auto p-2 text-sm max-w-[40%] rounded-3xl mb-6 pl-2' // User message styling
+                    : 'bg-[#292929] text-left self-start mr-auto p-4 max-w-[65%] rounded-3xl  mb-4' // Adjusted width for AI response
                 }`}
               >
                 {messageItem.type === 'responseMessage' && (
                   <GiJusticeStar className="mr-2 text-blue-500 pr-[5px]" />
                 )}
-                {messageItem.text}
+                {isCodeResponse(messageItem.text) ? (
+                  <pre className="text-green-300">
+                    {messageItem.text.replace(/```/g, '')} {/* Remove the ``` markers */}
+                  </pre>
+                ) : (
+                  messageItem.text
+                )}
               </div>
             ))}
           </div>
@@ -87,7 +100,7 @@ const App = () => {
         </div>
       )}
 
-      <div className="bottom w-[100%] flex flex-col items-center">
+      <div className="bottom w-full flex flex-col items-center">
         <div className="InputBox w-[65%] text-[15px] py-[7.4px] flex items-center bg-[#181818] rounded-[30px]">
           <input
             onChange={(e) => setMessage(e.target.value)}
