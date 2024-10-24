@@ -84,19 +84,28 @@ const App = () => {
                 key={index}
                 className={`mb-4 rounded-md ${
                   messageItem.type === 'user'
-                    ? 'bg-[#1F1F1F] mr-[13px] text-right self-end ml-auto p-2 text-sm max-w-[40%] rounded-2xl mb-6 pl-2' // User message styling
-                    : 'bg-[#292929] text-left self-start mr-auto p-4 max-w-[65%] rounded-2xl mb-4' // Adjusted width for AI response
+                    ? 'bg-[#1F1F1F] mr-[13px] text-right self-end ml-auto p-2 text-sm max-w-[30%] rounded-2xl mb-6 pl-2' // User message styling
+                    : 'bg-[#292929] text-left self-start mr-auto p-4 max-w-[67%] rounded-2xl mb-4 flex items-center space-x-2' // AI response styling with icon
                 }`}
               >
                 {messageItem.type === 'responseMessage' && (
-                  <GiJusticeStar className="mr-2 text-blue-500 pr-[5px]" />
+                  <>
+                    <GiJusticeStar className="text-blue-500" /> {/* AI response SVG */}
+                    <span>
+                      {isCodeResponse(messageItem.text) ? (
+                        <pre className="text-green-300">
+                          {messageItem.text.replace(/```/g, '')} {/* Remove the ``` markers */}
+                        </pre>
+                      ) : (
+                        messageItem.text
+                      )}
+                    </span>
+                  </>
                 )}
-                {isCodeResponse(messageItem.text) ? (
-                  <pre className="text-green-300">
-                    {messageItem.text.replace(/```/g, '')} {/* Remove the ``` markers */}
-                  </pre>
-                ) : (
-                  messageItem.text
+
+                {/* User message text */}
+                {messageItem.type === 'user' && (
+                  <span>{messageItem.text}</span>
                 )}
               </div>
             ))}
