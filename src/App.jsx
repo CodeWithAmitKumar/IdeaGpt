@@ -8,7 +8,8 @@ const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-const API_KEY = 'AIzaSyBT2LQbtw18Yhjii-gGgLznTbceH2s-Xps'; // replace with a valid API key
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+ // replace with a valid API key
 
 const App = () => {
   const [message, setMessage] = useState('');
